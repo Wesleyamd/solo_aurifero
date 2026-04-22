@@ -1,6 +1,7 @@
-from interface.app import iniciar_app
+from interface.app import App
 
 if __name__ == "__main__":
-    iniciar_app()
+    app = App()
+    app.run()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

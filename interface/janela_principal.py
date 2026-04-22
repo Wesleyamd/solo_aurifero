@@ -1,12 +1,50 @@
 import customtkinter as ctk
+from interface.componentes.barra_lateral import BarraLateral
+from interface.telas.tela_analise import TelaAnalise
+from interface.telas.tela_historico import TelaHistorico
+from interface.telas.tela_treinamento import TelaTreinamento
+from interface.tema.cores import Cores
 
 
-class JanelaPrincipal(ctk.CTk):
-    def __init__(self):
-        super().__init__()
+class JanelaPrincipal:
+    def __init__(self, root):
+        self.root = root
 
-        self.title("Solo Aurífero")
-        self.geometry("1024x754")
+        self.frame_principal = ctk.CTkFrame(
+            root,
+            fg_color=Cores.FUNDO_APP
+        )
+        self.frame_principal.pack(fill="both", expand=True)
 
-        label = ctk.CTkLabel(self, text="Sistema de Análise de Solo com Wesley Carvalho")
-        label.pack(pady=20)
+        self.barra_lateral = BarraLateral(
+            self.frame_principal,
+            self.mostrar_tela
+        )
+        self.barra_lateral.pack(side="left", fill="y")
+
+        self.area_conteudo = ctk.CTkFrame(
+            self.frame_principal,
+            fg_color=Cores.FUNDO_APP,
+            corner_radius=0
+        )
+        self.area_conteudo.pack(side="right", fill="both", expand=True)
+
+        self.tela_atual = None
+        self.mostrar_tela("analise")
+        self.barra_lateral.destacar_botao("analise")
+
+    def limpar_area_conteudo(self):
+        for widget in self.area_conteudo.winfo_children():
+            widget.destroy()
+
+    def mostrar_tela(self, nome_tela):
+        self.limpar_area_conteudo()
+
+        if nome_tela == "analise":
+            self.tela_atual = TelaAnalise(self.area_conteudo)
+        elif nome_tela == "historico":
+            self.tela_atual = TelaHistorico(self.area_conteudo)
+        elif nome_tela == "treinamento":
+            self.tela_atual = TelaTreinamento(self.area_conteudo)
+
+        self.tela_atual.pack(fill="both", expand=True, padx=24, pady=24)
