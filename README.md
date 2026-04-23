@@ -1,57 +1,163 @@
-# 🟡 Solo Aurífero
+#  Solo Aurífero
 
-Sistema desktop para análise e 
-classificação de solo com potencial aurífero 
-utilizando visão computacional e inteligência 
-artificial.
+Sistema de análise de imagens de solo com potencial aurífero
 
 ---
 
-## 📌 Sobre o projeto
+##  Descrição
 
-O projeto tem como objetivo analisar imagens de solo e identificar padrões que possam indicar a presença de ouro (solo aurífero), utilizando técnicas de processamento de imagem e aprendizado de máquina.
+O **Solo Aurífero** é um sistema desktop desenvolvido em Python com o objetivo de analisar imagens de solo e indicar, de forma inicial, o potencial aurífero com base em características visuais.
 
-O sistema permite:
-- Selecionar imagens de solo
-- Processar imagens com OpenCV
-- Extrair características (cor, textura, etc.)
-- Classificar o solo (aurífero ou não aurífero)
-- Armazenar histórico de análises
-- Treinar novos modelos de classificação
+O projeto faz parte do Trabalho de Conclusão de Curso (TCC) em Engenharia da Computação e tem como foco o uso de **visão computacional** e futuramente **aprendizado de máquina**.
 
 ---
 
-## 🖥️ Tecnologias utilizadas
+##  Objetivos
 
-- Python
-- CustomTkinter (interface gráfica)
-- OpenCV (processamento de imagem)
-- NumPy
-- SQLite (banco de dados)
-
----
-
-## 🧠 Funcionalidades
-
-- 📸 Seleção de imagem
-- 🔍 Análise de solo
-- 📊 Exibição de resultados
-- 💾 Histórico de análises
-- 🤖 Treinamento de modelo de IA
+* Analisar imagens de solo
+* Identificar padrões visuais relevantes
+* Classificar o solo quanto ao potencial aurífero
+* Armazenar histórico de análises
+* Evoluir para um modelo de IA treinado
 
 ---
 
-## 📂 Estrutura do projeto
+## 🛠 Tecnologias utilizadas
 
-```bash
+* Python
+* CustomTkinter (interface gráfica)
+* OpenCV (processamento de imagem - em evolução)
+* SQLite (armazenamento local)
+* Pillow (manipulação de imagens)
+
+---
+
+##  Arquitetura do projeto
+
+O sistema segue uma arquitetura modular:
+
+```
 solo_aurifero/
-├── interface/
-├── controller/
-├── service/
-├── model/
-├── ia/
-├── repository/
-├── database/
-├── assets/
-├── data/
-└── utils/
+├── interface/       # Interface gráfica (UI)
+├── service/         # Regras de negócio
+├── repository/      # Acesso a dados
+├── database/        # Configuração do banco
+├── data/            # Arquivos gerados (imagens e banco)
+├── controller/      # Controle de fluxo (em evolução)
+```
+
+---
+
+
+### Diagrama de Casos de Uso (DCU)
+![DCU](docs/dcu.png)
+
+### Diagrama de Classes (DCL)
+![DCL](docs/dcl.png)
+
+##  Funcionalidades atuais
+
+* Seleção de imagem
+* Preview da imagem (com redimensionamento proporcional)
+* Análise inicial (simples)
+* Armazenamento das análises no banco
+* Histórico com:
+
+  * preview da imagem
+  * resultado
+  * data da análise
+* Exclusão de análises
+* Remoção automática da imagem salva
+
+---
+
+## 🖥 Interface
+
+O sistema possui:
+
+* Menu lateral moderno
+* Tela de análise
+* Tela de histórico
+* Tela de treinamento (em desenvolvimento)
+
+---
+
+## ▶️ Como executar o projeto
+
+### 1. Clonar o repositório
+
+```
+git clone https://github.com/Wesleyamd/solo_aurifero.git
+```
+
+### 2. Acessar a pasta
+
+```
+cd solo_aurifero
+```
+
+### 3. Criar ambiente virtual
+
+```
+python -m venv .venv
+```
+
+### 4. Ativar o ambiente
+
+Windows:
+
+```
+.venv\Scripts\activate
+```
+
+### 5. Instalar dependências
+
+```
+pip install -r requirements.txt
+```
+
+### 6. Executar o sistema
+
+```
+python main.py
+```
+
+---
+
+##  Estrutura de dados
+
+As imagens analisadas são copiadas automaticamente para:
+
+```
+data/analise/
+```
+
+O banco de dados fica em:
+
+```
+data/banco/solo.db
+```
+
+---
+
+##  Funcionalidades futuras
+
+* Análise real com OpenCV
+* Extração de características (cor, textura)
+* Treinamento de modelo de Machine Learning
+* Classificação automática com IA
+* API para integração com aplicativos móveis
+* Dashboard com métricas
+
+---
+
+##  Autor
+
+**Wesley Carvalho das Neves**
+Engenharia da Computação - IFMT
+
+---
+
+##  Licença
+
+Este projeto é acadêmico e está sendo desenvolvido para fins educacionais.
