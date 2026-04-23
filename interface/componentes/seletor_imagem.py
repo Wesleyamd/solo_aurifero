@@ -1,8 +1,10 @@
+from repository.analise_repository import AnaliseRepository
 import customtkinter as ctk
 from tkinter import filedialog
 from PIL import Image
 from interface.tema.cores import Cores
 from service.analise_service import AnaliseService
+from service.arquivo_service import ArquivoService
 
 
 class SeletorImagem:
@@ -74,7 +76,10 @@ class SeletorImagem:
 
             self.label_imagem.configure(image=self.imagem_ctk)
 
-            resultado = AnaliseService.analisar_cor(caminho)
+            caminho_copia = ArquivoService.salvar_copia_imagem(caminho)
+
+            resultado = AnaliseService.analisar_cor(caminho_copia)
+            AnaliseRepository.salvar(caminho_copia, resultado)
 
             # 🎯 Badge de cor
             if "Possível" in resultado:
