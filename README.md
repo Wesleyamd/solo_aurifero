@@ -50,10 +50,10 @@ solo_aurifero/
 
 
 ### Diagrama de Casos de Uso (DCU)
-![DCU](docs/dcu.png)
+![DCU](docs/DCU.png)
 
 ### Diagrama de Classes (DCL)
-![DCL](docs/dcl.png)
+![DCL](docs/DCL.png)
 
 ##  Funcionalidades atuais
 
