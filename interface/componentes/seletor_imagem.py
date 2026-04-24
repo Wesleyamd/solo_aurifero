@@ -7,20 +7,23 @@ from service.analise_service import AnaliseService
 from service.arquivo_service import ArquivoService
 
 
-class SeletorImagem:
-    def __init__(self, root):
-        self.root = root
+class SeletorImagem(ctk.CTkFrame):
+    def __init__(self, master):
+        super().__init__(master, fg_color="transparent")
+
+        self.caminho_original = None
+        self.caminho_copia = None
         self.imagem_ctk = None
 
         # Card principal
         self.card = ctk.CTkFrame(
-            root,
+            self,
             corner_radius=18,
             fg_color=Cores.FUNDO_CARD,
             border_width=1,
             border_color=Cores.BORDA
         )
-        self.card.pack(fill="both", expand=True, padx=10, pady=10)
+        self.card.pack(fill="both", expand=True)
 
         # Título
         self.titulo = ctk.CTkLabel(
@@ -29,65 +32,136 @@ class SeletorImagem:
             font=("Arial", 18, "bold"),
             text_color=Cores.TEXTO_PRINCIPAL
         )
-        self.titulo.pack(anchor="w", padx=15, pady=(15, 5))
+        self.titulo.pack(anchor="w", padx=20, pady=(20, 5))
 
-        # Botão
-        self.botao = ctk.CTkButton(
+        # Área dos botões
+        self.frame_botoes = ctk.CTkFrame(
             self.card,
+            fg_color="transparent"
+        )
+        self.frame_botoes.pack(fill="x", padx=20, pady=(10, 15))
+
+        self.botao_selecionar = ctk.CTkButton(
+            self.frame_botoes,
             text="Selecionar Imagem",
             command=self.carregar_imagem,
             fg_color=Cores.DESTAQUE,
             hover_color=Cores.DESTAQUE_HOVER,
-            text_color="#111"
+            text_color="#111111",
+            height=40,
+            corner_radius=10
         )
-        self.botao.pack(pady=10)
+        self.botao_selecionar.pack(side="left")
 
-        # Label imagem
-        self.label_imagem = ctk.CTkLabel(self.card, text="")
-        self.label_imagem.pack(pady=10)
+        self.botao_analisar = ctk.CTkButton(
+            self.frame_botoes,
+            text="Analisar Solo",
+            command=self.analisar_imagem,
+            fg_color=Cores.DESTAQUE,
+            hover_color=Cores.DESTAQUE_HOVER,
+            text_color="#111111",
+            height=40,
+            corner_radius=10,
+            state="disabled"
+        )
+        self.botao_analisar.pack(side="right")
+
+        # Área da imagem
+        self.frame_imagem = ctk.CTkFrame(
+            self.card,
+            fg_color=Cores.FUNDO_APP,
+            corner_radius=16
+        )
+        self.frame_imagem.pack(
+            fill="both",
+            expand=True,
+            padx=20,
+            pady=(0, 15)
+        )
+
+        self.label_imagem = ctk.CTkLabel(
+            self.frame_imagem,
+            text="Nenhuma imagem selecionada",
+            text_color=Cores.TEXTO_SECUNDARIO
+        )
+        self.label_imagem.pack(expand=True)
 
         # Resultado
         self.label_resultado = ctk.CTkLabel(
             self.card,
             text="Aguardando análise...",
-            font=("Arial", 16, "bold")
+            font=("Arial", 16, "bold"),
+            text_color=Cores.TEXTO_SECUNDARIO
         )
-        self.label_resultado.pack(pady=10)
+        self.label_resultado.pack(pady=(0, 20))
 
     def carregar_imagem(self):
         caminho = filedialog.askopenfilename(
-            filetypes=[("Imagens", "*.png *.jpg *.jpeg")]
+            title="Selecionar imagem do solo",
+            filetypes=[
+                ("Imagens", "*.png *.jpg *.jpeg"),
+                ("Todos os arquivos", "*.*")
+            ]
         )
 
-        if caminho:
-            imagem = Image.open(caminho)
+        if not caminho:
+            return
 
-            largura_max = 800
-            altura_max = 450
+        self.caminho_original = caminho
 
-            # mantém proporção automaticamente
-            imagem.thumbnail((largura_max, altura_max))
+        imagem = Image.open(caminho)
 
-            self.imagem_ctk = ctk.CTkImage(
-                light_image=imagem,
-                dark_image=imagem,
-                size=imagem.size
-            )
+        largura_max = 800
+        altura_max = 450
+        imagem.thumbnail((largura_max, altura_max))
 
-            self.label_imagem.configure(image=self.imagem_ctk)
+        self.imagem_ctk = ctk.CTkImage(
+            light_image=imagem,
+            dark_image=imagem,
+            size=imagem.size
+        )
 
-            caminho_copia = ArquivoService.salvar_copia_imagem(caminho)
+        self.label_imagem.configure(
+            image=self.imagem_ctk,
+            text=""
+        )
 
-            resultado = AnaliseService.analisar_cor(caminho_copia)
-            AnaliseRepository.salvar(caminho_copia, resultado)
+        self.label_resultado.configure(
+            text="Imagem carregada. Clique em Analisar Solo.",
+            text_color=Cores.TEXTO_SECUNDARIO
+        )
 
-            # 🎯 Badge de cor
-            if "Possível" in resultado:
-                cor = "#c7a34b"  # dourado
-            else:
-                cor = "#c94f4f"  # vermelho suave
+        self.botao_analisar.configure(state="normal")
 
+    def analisar_imagem(self):
+        if not self.caminho_original:
             self.label_resultado.configure(
-                text=resultado,
-                text_color=cor
+                text="Selecione uma imagem primeiro.",
+                text_color="#c94f4f"
             )
+            return
+
+        self.caminho_copia = ArquivoService.salvar_copia_imagem(
+            self.caminho_original
+        )
+
+        resultado = AnaliseService.analisar_cor(self.caminho_copia)
+
+        AnaliseRepository.salvar(
+            self.caminho_copia,
+            resultado
+        )
+
+        if "Possível" in resultado:
+            cor = "#c7a34b"
+        else:
+            cor = "#c94f4f"
+
+        self.label_resultado.configure(
+            text=resultado,
+            text_color=cor
+        )
+
+        # Atualiza os cards da TelaAnalise automaticamente
+        if hasattr(self.master, "atualizar_cards"):
+            self.master.atualizar_cards()

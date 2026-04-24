@@ -71,3 +71,32 @@ class AnaliseRepository:
                     print(f"Arquivo não removido. Caminho fora da pasta esperada ou inexistente: {caminho_absoluto}")
             except Exception as e:
                 print(f"Erro ao remover imagem: {e}")
+
+    @staticmethod
+    def contar():
+        conn = ConexaoBanco.conectar()
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT COUNT(*) FROM analises")
+        total = cursor.fetchone()[0]
+
+        conn.close()
+        return total
+
+    @staticmethod
+    def ultimo_resultado():
+        conn = ConexaoBanco.conectar()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+                       SELECT resultado
+                       FROM analises
+                       ORDER BY id DESC LIMIT 1
+                       """)
+
+        resultado = cursor.fetchone()
+        conn.close()
+
+        if resultado:
+            return resultado[0]
+        return "-"

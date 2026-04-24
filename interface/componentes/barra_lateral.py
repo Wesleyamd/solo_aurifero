@@ -15,6 +15,7 @@ class BarraLateral(ctk.CTkFrame):
         self.callback_mudar_tela = callback_mudar_tela
         self.botoes = {}
 
+        # Logo
         self.logo = ctk.CTkLabel(
             self,
             text="⛏ Solo Aurífero",
@@ -23,6 +24,7 @@ class BarraLateral(ctk.CTkFrame):
         )
         self.logo.pack(pady=(30, 8), padx=20, anchor="w")
 
+        # Subtítulo
         self.subtitulo = ctk.CTkLabel(
             self,
             text="Sistema de análise de imagens de solo",
@@ -32,6 +34,7 @@ class BarraLateral(ctk.CTkFrame):
         )
         self.subtitulo.pack(padx=20, pady=(0, 30), anchor="w")
 
+        # Botões
         self.criar_botao("analise", "Analisar Solo")
         self.criar_botao("historico", "Histórico de Análises")
         self.criar_botao("treinamento", "Treinar Modelo")
@@ -46,13 +49,14 @@ class BarraLateral(ctk.CTkFrame):
             hover_color=Cores.FUNDO_HOVER,
             text_color=Cores.TEXTO_PRINCIPAL,
             anchor="w",
+            cursor="hand2",
             command=lambda: self.ao_clicar(chave)
         )
         botao.pack(fill="x", padx=16, pady=6)
+
         self.botoes[chave] = botao
 
     def ao_clicar(self, chave):
-        self.destacar_botao(chave)
         self.callback_mudar_tela(chave)
 
     def destacar_botao(self, chave_ativo):
@@ -60,10 +64,12 @@ class BarraLateral(ctk.CTkFrame):
             if chave == chave_ativo:
                 botao.configure(
                     fg_color=Cores.DESTAQUE,
-                    text_color="#111111"
+                    text_color="#111111",
+                    hover_color=Cores.DESTAQUE
                 )
             else:
                 botao.configure(
                     fg_color="transparent",
-                    text_color=Cores.TEXTO_PRINCIPAL
+                    text_color=Cores.TEXTO_PRINCIPAL,
+                    hover_color=Cores.FUNDO_HOVER
                 )

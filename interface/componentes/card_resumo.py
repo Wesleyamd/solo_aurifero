@@ -27,3 +27,6 @@ class CardResumo(ctk.CTkFrame):
             text_color=Cores.TEXTO_PRINCIPAL
         )
         self.valor.pack(anchor="w", padx=15, pady=(0, 10))
+
+    def atualizar_valor(self, novo_valor):
+        self.valor.configure(text=novo_valor)

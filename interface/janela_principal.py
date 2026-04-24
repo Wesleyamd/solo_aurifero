@@ -30,8 +30,8 @@ class JanelaPrincipal:
         self.area_conteudo.pack(side="right", fill="both", expand=True)
 
         self.tela_atual = None
+
         self.mostrar_tela("analise")
-        self.barra_lateral.destacar_botao("analise")
 
     def limpar_area_conteudo(self):
         for widget in self.area_conteudo.winfo_children():
@@ -42,9 +42,21 @@ class JanelaPrincipal:
 
         if nome_tela == "analise":
             self.tela_atual = TelaAnalise(self.area_conteudo)
+
         elif nome_tela == "historico":
             self.tela_atual = TelaHistorico(self.area_conteudo)
+
         elif nome_tela == "treinamento":
             self.tela_atual = TelaTreinamento(self.area_conteudo)
 
-        self.tela_atual.pack(fill="both", expand=True, padx=24, pady=24)
+        else:
+            return
+
+        self.tela_atual.pack(
+            fill="both",
+            expand=True,
+            padx=24,
+            pady=24
+        )
+
+        self.barra_lateral.destacar_botao(nome_tela)
