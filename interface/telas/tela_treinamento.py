@@ -76,6 +76,15 @@ class TelaTreinamento(ctk.CTkFrame):
         )
         self.label_modelo.pack(anchor="w", padx=20, pady=(10, 18))
 
+        self.barra_progresso = ctk.CTkProgressBar(
+            self.card_status,
+            height=12,
+            corner_radius=10,
+            progress_color=Cores.DESTAQUE
+        )
+        self.barra_progresso.pack(fill="x", padx=20, pady=(0, 18))
+        self.barra_progresso.set(0)
+
         self.frame_botoes_dataset = ctk.CTkFrame(self, fg_color="transparent")
         self.frame_botoes_dataset.pack(fill="x", pady=(0, 15))
 
@@ -200,6 +209,18 @@ class TelaTreinamento(ctk.CTkFrame):
 
     def treinar_modelo(self):
         self.label_modelo.configure(
-            text="Treinamento ainda não implementado",
-            text_color="#e0bb5c"
+            text="Treinamento em andamento...",
+            text_color=Cores.DESTAQUE
+        )
+
+        self.barra_progresso.set(0.5)
+
+        self.after(1000, self.finalizar_treinamento_simulado)
+
+    def finalizar_treinamento_simulado(self):
+        self.barra_progresso.set(1)
+
+        self.label_modelo.configure(
+            text="Treinamento simulado concluído",
+            text_color="#4caf50"
         )

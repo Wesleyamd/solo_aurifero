@@ -60,8 +60,9 @@ class SeletorImagem(ctk.CTkFrame):
             fg_color=Cores.DESTAQUE,
             hover_color=Cores.DESTAQUE_HOVER,
             text_color="#111111",
-            height=40,
-            corner_radius=10,
+            height=45,
+            corner_radius=12,
+            font=("Arial", 14, "bold"),
             state="disabled"
         )
         self.botao_analisar.pack(side="right")
@@ -131,7 +132,11 @@ class SeletorImagem(ctk.CTkFrame):
             text_color=Cores.TEXTO_SECUNDARIO
         )
 
-        self.botao_analisar.configure(state="normal")
+        self.botao_analisar.configure(
+            state="normal",
+            fg_color=Cores.DESTAQUE,
+            hover_color=Cores.DESTAQUE_HOVER
+        )
 
     def analisar_imagem(self):
         if not self.caminho_original:
