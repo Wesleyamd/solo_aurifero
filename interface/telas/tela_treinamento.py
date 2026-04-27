@@ -5,8 +5,8 @@ import customtkinter as ctk
 from tkinter import filedialog, messagebox
 
 from interface.componentes.cabecalho import Cabecalho
-from interface.componentes.card_resultado import CardResultado
-from interface.tema.cores import Cores
+from interface.componentes.card_treinamento_resumo import CardTreinamentoResumo
+from interface.componentes.painel_treinamento import PainelTreinamento
 
 
 class TelaTreinamento(ctk.CTkFrame):
@@ -21,6 +21,10 @@ class TelaTreinamento(ctk.CTkFrame):
         os.makedirs(self.pasta_nao, exist_ok=True)
         os.makedirs(self.pasta_modelos, exist_ok=True)
 
+        self.criar_layout()
+        self.atualizar_status()
+
+    def criar_layout(self):
         self.cabecalho = Cabecalho(
             self,
             "Treinar Modelo",
@@ -28,199 +32,120 @@ class TelaTreinamento(ctk.CTkFrame):
         )
         self.cabecalho.pack(fill="x", pady=(0, 20))
 
-        self.card_info = CardResultado(
+        self.criar_cards_resumo()
+
+        self.painel = PainelTreinamento(
             self,
-            "Treinamento do Modelo",
-            "Adicione imagens nas duas classes: solo com potencial aurífero e solo sem potencial aurífero."
+            ao_adicionar_potencial=lambda: self.adicionar_imagens("potencial"),
+            ao_adicionar_nao=lambda: self.adicionar_imagens("nao"),
+            ao_atualizar=self.atualizar_status,
+            ao_treinar=self.treinar_modelo
         )
-        self.card_info.pack(fill="x", pady=(0, 20))
+        self.painel.pack(fill="x")
 
-        self.card_status = ctk.CTkFrame(
-            self,
-            corner_radius=18,
-            fg_color=Cores.FUNDO_CARD,
-            border_width=1,
-            border_color=Cores.BORDA
+    def criar_cards_resumo(self):
+        self.frame_cards = ctk.CTkFrame(self, fg_color="transparent")
+        self.frame_cards.pack(fill="x", pady=(0, 20))
+
+        self.card_potencial = CardTreinamentoResumo(
+            self.frame_cards,
+            "Aurífero",
+            "0"
         )
-        self.card_status.pack(fill="x", pady=(0, 20))
+        self.card_potencial.pack(side="left", expand=True, fill="x", padx=(0, 6))
 
-        self.titulo_status = ctk.CTkLabel(
-            self.card_status,
-            text="Status do Dataset",
-            font=("Arial", 18, "bold"),
-            text_color=Cores.TEXTO_PRINCIPAL
+        self.card_nao = CardTreinamentoResumo(
+            self.frame_cards,
+            "Não Aurífero",
+            "0"
         )
-        self.titulo_status.pack(anchor="w", padx=20, pady=(18, 8))
+        self.card_nao.pack(side="left", expand=True, fill="x", padx=6)
 
-        self.label_potencial = ctk.CTkLabel(
-            self.card_status,
-            text="Potencial aurífero: 0 imagens",
-            font=("Arial", 14),
-            text_color=Cores.TEXTO_SECUNDARIO
+        self.card_total = CardTreinamentoResumo(
+            self.frame_cards,
+            "Total",
+            "0"
         )
-        self.label_potencial.pack(anchor="w", padx=20, pady=3)
+        self.card_total.pack(side="left", expand=True, fill="x", padx=6)
 
-        self.label_nao = ctk.CTkLabel(
-            self.card_status,
-            text="Não aurífero: 0 imagens",
-            font=("Arial", 14),
-            text_color=Cores.TEXTO_SECUNDARIO
+        self.card_modelo = CardTreinamentoResumo(
+            self.frame_cards,
+            "Modelo",
+            "Não"
         )
-        self.label_nao.pack(anchor="w", padx=20, pady=3)
-
-        self.label_modelo = ctk.CTkLabel(
-            self.card_status,
-            text="Modelo: Não treinado",
-            font=("Arial", 15, "bold"),
-            text_color="#c94f4f"
-        )
-        self.label_modelo.pack(anchor="w", padx=20, pady=(10, 18))
-
-        self.barra_progresso = ctk.CTkProgressBar(
-            self.card_status,
-            height=12,
-            corner_radius=10,
-            progress_color=Cores.DESTAQUE
-        )
-        self.barra_progresso.pack(fill="x", padx=20, pady=(0, 18))
-        self.barra_progresso.set(0)
-
-        self.frame_botoes_dataset = ctk.CTkFrame(self, fg_color="transparent")
-        self.frame_botoes_dataset.pack(fill="x", pady=(0, 15))
-
-        self.botao_add_potencial = ctk.CTkButton(
-            self.frame_botoes_dataset,
-            text="Adicionar imagens — Potencial aurífero",
-            height=42,
-            corner_radius=12,
-            fg_color=Cores.DESTAQUE,
-            hover_color=Cores.DESTAQUE_HOVER,
-            text_color="#111111",
-            command=lambda: self.adicionar_imagens("potencial")
-        )
-        self.botao_add_potencial.pack(side="left", padx=(0, 10))
-
-        self.botao_add_nao = ctk.CTkButton(
-            self.frame_botoes_dataset,
-            text="Adicionar imagens — Não aurífero",
-            height=42,
-            corner_radius=12,
-            fg_color=Cores.DESTAQUE,
-            hover_color=Cores.DESTAQUE_HOVER,
-            text_color="#111111",
-            command=lambda: self.adicionar_imagens("nao")
-        )
-        self.botao_add_nao.pack(side="left")
-
-        self.frame_botoes = ctk.CTkFrame(self, fg_color="transparent")
-        self.frame_botoes.pack(fill="x")
-
-        self.botao_atualizar = ctk.CTkButton(
-            self.frame_botoes,
-            text="Atualizar Status",
-            height=42,
-            corner_radius=12,
-            command=self.atualizar_status
-        )
-        self.botao_atualizar.pack(side="left")
-
-        self.botao_treinar = ctk.CTkButton(
-            self.frame_botoes,
-            text="Treinar Modelo",
-            height=42,
-            corner_radius=12,
-            fg_color=Cores.DESTAQUE,
-            hover_color=Cores.DESTAQUE_HOVER,
-            text_color="#111111",
-            command=self.treinar_modelo
-        )
-        self.botao_treinar.pack(side="right")
-
-        self.atualizar_status()
+        self.card_modelo.pack(side="left", expand=True, fill="x", padx=(6, 0))
 
     def adicionar_imagens(self, classe):
         caminhos = filedialog.askopenfilenames(
             title="Selecionar imagens",
             filetypes=[
-                ("Imagens", "*.jpg *.jpeg *.png"),
-                ("Todos os arquivos", "*.*")
+                ("Imagens", "*.jpg *.jpeg *.png")
             ]
         )
 
         if not caminhos:
             return
 
-        pasta_destino = self.pasta_potencial if classe == "potencial" else self.pasta_nao
+        pasta = self.pasta_potencial if classe == "potencial" else self.pasta_nao
         copiadas = 0
 
-        for caminho_origem in caminhos:
+        for caminho in caminhos:
             try:
-                extensao = os.path.splitext(caminho_origem)[1].lower()
-                nome_arquivo = f"{classe}_{uuid.uuid4().hex}{extensao}"
-                caminho_destino = os.path.join(pasta_destino, nome_arquivo)
+                ext = os.path.splitext(caminho)[1]
+                nome = f"{uuid.uuid4().hex}{ext}"
+                destino = os.path.join(pasta, nome)
 
-                shutil.copy2(caminho_origem, caminho_destino)
+                shutil.copy2(caminho, destino)
                 copiadas += 1
-
             except Exception as erro:
                 print(f"Erro ao copiar imagem: {erro}")
 
         self.atualizar_status()
 
         messagebox.showinfo(
-            "Imagens adicionadas",
-            f"{copiadas} imagem(ns) copiadas para o dataset."
+            "Sucesso",
+            f"{copiadas} imagem(ns) adicionadas."
         )
 
     def contar_imagens(self, pasta):
         if not os.path.exists(pasta):
             return 0
 
-        extensoes = (".jpg", ".jpeg", ".png")
         return len([
-            arquivo for arquivo in os.listdir(pasta)
-            if arquivo.lower().endswith(extensoes)
+            arq for arq in os.listdir(pasta)
+            if arq.lower().endswith((".jpg", ".jpeg", ".png"))
         ])
 
     def atualizar_status(self):
-        caminho_modelo = os.path.join(self.pasta_modelos, "modelo_solo.pkl")
+        total_p = self.contar_imagens(self.pasta_potencial)
+        total_n = self.contar_imagens(self.pasta_nao)
+        total = total_p + total_n
 
-        total_potencial = self.contar_imagens(self.pasta_potencial)
-        total_nao = self.contar_imagens(self.pasta_nao)
-
-        self.label_potencial.configure(
-            text=f"Potencial aurífero: {total_potencial} imagens"
+        caminho_modelo = os.path.join(
+            self.pasta_modelos,
+            "modelo_solo.pkl"
         )
 
-        self.label_nao.configure(
-            text=f"Não aurífero: {total_nao} imagens"
-        )
+        treinado = os.path.exists(caminho_modelo)
 
-        if os.path.exists(caminho_modelo):
-            self.label_modelo.configure(
-                text="Modelo: Treinado",
-                text_color="#4caf50"
-            )
-        else:
-            self.label_modelo.configure(
-                text="Modelo: Não treinado",
-                text_color="#c94f4f"
-            )
+        self.card_potencial.atualizar_valor(total_p)
+        self.card_nao.atualizar_valor(total_n)
+        self.card_total.atualizar_valor(total)
+        self.card_modelo.atualizar_valor("Sim" if treinado else "Não")
+
+        self.painel.atualizar_status_modelo(treinado)
 
     def treinar_modelo(self):
-        self.label_modelo.configure(
-            text="Treinamento em andamento...",
-            text_color=Cores.DESTAQUE
-        )
+        self.painel.iniciar_treinamento()
 
-        self.barra_progresso.set(0.5)
+        self.after(800, lambda: self.painel.progresso(0.65))
+        self.after(1500, lambda: self.painel.progresso(0.90))
+        self.after(2200, self.finalizar_treinamento)
 
-        self.after(1000, self.finalizar_treinamento_simulado)
+    def finalizar_treinamento(self):
+        self.painel.finalizar_treinamento()
 
-    def finalizar_treinamento_simulado(self):
-        self.barra_progresso.set(1)
-
-        self.label_modelo.configure(
-            text="Treinamento simulado concluído",
-            text_color="#4caf50"
+        messagebox.showinfo(
+            "Treinamento",
+            "Modelo treinado com sucesso (simulado)."
         )

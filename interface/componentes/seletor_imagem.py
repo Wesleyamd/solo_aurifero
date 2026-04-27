@@ -2,6 +2,7 @@ from repository.analise_repository import AnaliseRepository
 import customtkinter as ctk
 from tkinter import filedialog
 from PIL import Image
+
 from interface.tema.cores import Cores
 from service.analise_service import AnaliseService
 from service.arquivo_service import ArquivoService
@@ -15,63 +16,82 @@ class SeletorImagem(ctk.CTkFrame):
         self.caminho_copia = None
         self.imagem_ctk = None
 
+        self.criar_layout()
+
+    def criar_layout(self):
         # Card principal
         self.card = ctk.CTkFrame(
             self,
-            corner_radius=18,
             fg_color=Cores.FUNDO_CARD,
+            corner_radius=20,
             border_width=1,
             border_color=Cores.BORDA
         )
         self.card.pack(fill="both", expand=True)
 
-        # Título
+        # Topo
+        self.topo = ctk.CTkFrame(self.card, fg_color="transparent")
+        self.topo.pack(fill="x", padx=20, pady=(18, 10))
+
         self.titulo = ctk.CTkLabel(
-            self.card,
+            self.topo,
             text="Imagem do Solo",
-            font=("Arial", 18, "bold"),
+            font=("Arial", 22, "bold"),
             text_color=Cores.TEXTO_PRINCIPAL
         )
-        self.titulo.pack(anchor="w", padx=20, pady=(20, 5))
+        self.titulo.pack(side="left")
 
-        # Área dos botões
+        self.status = ctk.CTkLabel(
+            self.topo,
+            text="Pronto para análise",
+            font=("Arial", 13),
+            text_color="#55ff99"
+        )
+        self.status.pack(side="right")
+
+        # Botões
         self.frame_botoes = ctk.CTkFrame(
             self.card,
             fg_color="transparent"
         )
-        self.frame_botoes.pack(fill="x", padx=20, pady=(10, 15))
+        self.frame_botoes.pack(fill="x", padx=20, pady=(0, 15))
 
         self.botao_selecionar = ctk.CTkButton(
             self.frame_botoes,
-            text="Selecionar Imagem",
+            text="📁 Selecionar Imagem",
             command=self.carregar_imagem,
+            width=220,
+            height=44,
+            font=("Arial", 14, "bold"),
             fg_color=Cores.DESTAQUE,
             hover_color=Cores.DESTAQUE_HOVER,
             text_color="#111111",
-            height=40,
-            corner_radius=10
+            corner_radius=12
         )
         self.botao_selecionar.pack(side="left")
 
         self.botao_analisar = ctk.CTkButton(
             self.frame_botoes,
-            text="Analisar Solo",
+            text="🚀 Analisar Solo",
             command=self.analisar_imagem,
-            fg_color=Cores.DESTAQUE,
-            hover_color=Cores.DESTAQUE_HOVER,
-            text_color="#111111",
-            height=45,
-            corner_radius=12,
+            width=220,
+            height=44,
             font=("Arial", 14, "bold"),
+            fg_color="#2c3e50",
+            hover_color="#34495e",
+            text_color="white",
+            corner_radius=12,
             state="disabled"
         )
         self.botao_analisar.pack(side="right")
 
-        # Área da imagem
+        # Área imagem
         self.frame_imagem = ctk.CTkFrame(
             self.card,
             fg_color=Cores.FUNDO_APP,
-            corner_radius=16
+            corner_radius=18,
+            border_width=1,
+            border_color=Cores.BORDA
         )
         self.frame_imagem.pack(
             fill="both",
@@ -83,6 +103,7 @@ class SeletorImagem(ctk.CTkFrame):
         self.label_imagem = ctk.CTkLabel(
             self.frame_imagem,
             text="Nenhuma imagem selecionada",
+            font=("Arial", 16),
             text_color=Cores.TEXTO_SECUNDARIO
         )
         self.label_imagem.pack(expand=True)
@@ -91,10 +112,10 @@ class SeletorImagem(ctk.CTkFrame):
         self.label_resultado = ctk.CTkLabel(
             self.card,
             text="Aguardando análise...",
-            font=("Arial", 16, "bold"),
+            font=("Arial", 18, "bold"),
             text_color=Cores.TEXTO_SECUNDARIO
         )
-        self.label_resultado.pack(pady=(0, 20))
+        self.label_resultado.pack(pady=(5, 20))
 
     def carregar_imagem(self):
         caminho = filedialog.askopenfilename(
@@ -112,8 +133,8 @@ class SeletorImagem(ctk.CTkFrame):
 
         imagem = Image.open(caminho)
 
-        largura_max = 800
-        altura_max = 450
+        largura_max = 850
+        altura_max = 480
         imagem.thumbnail((largura_max, altura_max))
 
         self.imagem_ctk = ctk.CTkImage(
@@ -127,30 +148,41 @@ class SeletorImagem(ctk.CTkFrame):
             text=""
         )
 
+        self.status.configure(
+            text="Imagem carregada",
+            text_color="#55ff99"
+        )
+
         self.label_resultado.configure(
-            text="Imagem carregada. Clique em Analisar Solo.",
+            text="Clique em Analisar Solo.",
             text_color=Cores.TEXTO_SECUNDARIO
         )
 
         self.botao_analisar.configure(
             state="normal",
             fg_color=Cores.DESTAQUE,
-            hover_color=Cores.DESTAQUE_HOVER
+            hover_color=Cores.DESTAQUE_HOVER,
+            text_color="#111111"
         )
 
     def analisar_imagem(self):
         if not self.caminho_original:
-            self.label_resultado.configure(
-                text="Selecione uma imagem primeiro.",
-                text_color="#c94f4f"
-            )
             return
+
+        self.label_resultado.configure(
+            text="Analisando solo...",
+            text_color="#ffaa00"
+        )
+
+        self.update()
 
         self.caminho_copia = ArquivoService.salvar_copia_imagem(
             self.caminho_original
         )
 
-        resultado = AnaliseService.analisar_cor(self.caminho_copia)
+        resultado = AnaliseService.analisar_cor(
+            self.caminho_copia
+        )
 
         AnaliseRepository.salvar(
             self.caminho_copia,
@@ -158,15 +190,19 @@ class SeletorImagem(ctk.CTkFrame):
         )
 
         if "Possível" in resultado:
-            cor = "#c7a34b"
+            cor = "#4ade80"
         else:
-            cor = "#c94f4f"
+            cor = "#f87171"
 
         self.label_resultado.configure(
             text=resultado,
             text_color=cor
         )
 
-        # Atualiza os cards da TelaAnalise automaticamente
+        self.status.configure(
+            text="Análise concluída",
+            text_color="#55ff99"
+        )
+
         if hasattr(self.master, "atualizar_cards"):
             self.master.atualizar_cards()
