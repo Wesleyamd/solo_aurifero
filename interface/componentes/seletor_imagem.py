@@ -1,11 +1,12 @@
-from repository.analise_repository import AnaliseRepository
+from persistencia.repository.analise_repository import AnaliseRepository
 import customtkinter as ctk
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 from PIL import Image
+from datetime import datetime
 
 from interface.tema.cores import Cores
-from service.analise_service import AnaliseService
-from service.arquivo_service import ArquivoService
+from aplicacao.service.analise_service import AnaliseService
+from aplicacao.service.arquivo_service import ArquivoService
 
 
 class SeletorImagem(ctk.CTkFrame):
@@ -48,6 +49,18 @@ class SeletorImagem(ctk.CTkFrame):
             text_color="#55ff99"
         )
         self.status.pack(side="right")
+
+        # Nome da análise
+        self.entry_nome = ctk.CTkEntry(
+            self.card,
+            placeholder_text="Digite um nome para a análise. Ex.: Solo área norte",
+            height=42,
+            font=("Arial", 14),
+            fg_color=Cores.FUNDO_APP,
+            border_color=Cores.BORDA,
+            text_color=Cores.TEXTO_PRINCIPAL
+        )
+        self.entry_nome.pack(fill="x", padx=20, pady=(0, 15))
 
         # Botões
         self.frame_botoes = ctk.CTkFrame(
@@ -169,6 +182,16 @@ class SeletorImagem(ctk.CTkFrame):
         if not self.caminho_original:
             return
 
+        nome_analise = self.entry_nome.get().strip()
+
+        if not nome_analise:
+            messagebox.showwarning(
+                "Nome da análise",
+                "Informe um nome para identificar esta análise."
+            )
+            self.entry_nome.focus()
+            return
+
         self.label_resultado.configure(
             text="Analisando solo...",
             text_color="#ffaa00"
@@ -184,12 +207,16 @@ class SeletorImagem(ctk.CTkFrame):
             self.caminho_copia
         )
 
+        data_analise = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
         AnaliseRepository.salvar(
+            nome_analise,
             self.caminho_copia,
-            resultado
+            resultado,
+            data_analise
         )
 
-        if "Possível" in resultado:
+        if AnaliseRepository.eh_resultado_com_potencial(resultado):
             cor = "#4ade80"
         else:
             cor = "#f87171"
@@ -204,5 +231,14 @@ class SeletorImagem(ctk.CTkFrame):
             text_color="#55ff99"
         )
 
-        if hasattr(self.master, "atualizar_cards"):
-            self.master.atualizar_cards()
+        self.atualizar_tela_pai()
+
+    def atualizar_tela_pai(self):
+        widget = self.master
+
+        while widget is not None:
+            if hasattr(widget, "atualizar_cards"):
+                widget.atualizar_cards()
+                return
+
+            widget = getattr(widget, "master", None)

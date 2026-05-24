@@ -2,6 +2,7 @@ import customtkinter as ctk
 
 from interface.tema.cores import Cores
 from interface.componentes.item_analise import ItemAnalise
+from persistencia.repository.analise_repository import AnaliseRepository
 
 
 class ListaAnalises(ctk.CTkFrame):
@@ -28,24 +29,41 @@ class ListaAnalises(ctk.CTkFrame):
             text_color=Cores.DOURADO
         ).pack(side="left")
 
-        ctk.CTkButton(
+        ctk.CTkLabel(
             topo,
-            text="Ver todas",
-            width=80,
-            height=28,
-            fg_color="#1B2430",
-            hover_color=Cores.CARD_HOVER,
-            text_color=Cores.DOURADO,
-            font=("Segoe UI", 12, "bold")
+            text="Dados do SQLite",
+            font=("Segoe UI", 12, "bold"),
+            text_color=Cores.TEXTO_SECUNDARIO
         ).pack(side="right")
 
     def criar_lista(self):
-        dados = [
-            ("solo_0045.jpg", "15/05/2026 • 14:32", "82.4%", "Potencial Aurífero", Cores.VERDE),
-            ("solo_0044.jpg", "15/05/2026 • 13:58", "18.7%", "Sem Potencial", Cores.VERMELHO),
-            ("solo_0043.jpg", "15/05/2026 • 13:21", "76.1%", "Potencial Aurífero", Cores.VERDE),
-        ]
+        registros = AnaliseRepository.listar_ultimas(3)
 
-        for item in dados:
-            linha = ItemAnalise(self, *item)
+        if not registros:
+            ctk.CTkLabel(
+                self,
+                text="Nenhuma análise registrada ainda.",
+                font=("Segoe UI", 13),
+                text_color=Cores.TEXTO_SECUNDARIO
+            ).pack(anchor="w", padx=22, pady=(8, 22))
+            return
+
+        for analise_id, nome_analise, caminho_imagem, resultado, data_analise in registros:
+            nome = nome_analise or "Análise sem nome"
+            data = str(data_analise)
+
+            possui_potencial = AnaliseRepository.eh_resultado_com_potencial(resultado)
+            porcentagem = "100%" if possui_potencial else "0%"
+            cor = Cores.VERDE if possui_potencial else Cores.VERMELHO
+
+            linha = ItemAnalise(
+                self,
+                nome,
+                data,
+                porcentagem,
+                resultado,
+                cor,
+                caminho_imagem
+            )
+
             linha.pack(fill="x", padx=22, pady=6)

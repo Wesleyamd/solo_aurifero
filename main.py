@@ -1,4 +1,4 @@
-from database.init_db import inicializar_banco
+from persistencia.database.init_db import inicializar_banco
 from interface.app import App
 
 if __name__ == "__main__":

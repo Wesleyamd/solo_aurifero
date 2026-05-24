@@ -4,7 +4,7 @@ from tkinter import messagebox
 from interface.componentes.cabecalho import Cabecalho
 from interface.componentes.card_historico import CardHistorico
 from interface.tema.cores import Cores
-from repository.analise_repository import AnaliseRepository
+from persistencia.repository.analise_repository import AnaliseRepository
 
 
 class TelaHistorico(ctk.CTkFrame):
@@ -69,11 +69,12 @@ class TelaHistorico(ctk.CTkFrame):
             return
 
         for registro in registros:
-            analise_id, caminho_imagem, resultado, data_analise = registro
+            analise_id, nome_analise, caminho_imagem, resultado, data_analise = registro
 
             card = CardHistorico(
                 self.area_lista,
                 analise_id,
+                nome_analise,
                 caminho_imagem,
                 resultado,
                 data_analise,

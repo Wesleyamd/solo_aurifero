@@ -11,6 +11,7 @@ class CardHistorico(ctk.CTkFrame):
         self,
         master,
         analise_id,
+        nome_analise,
         caminho_imagem,
         resultado,
         data_analise,
@@ -25,6 +26,7 @@ class CardHistorico(ctk.CTkFrame):
         )
 
         self.analise_id = analise_id
+        self.nome_analise = nome_analise or os.path.basename(caminho_imagem)
         self.caminho_imagem = caminho_imagem
         self.resultado = resultado
         self.data_analise = data_analise
@@ -83,11 +85,19 @@ class CardHistorico(ctk.CTkFrame):
 
         titulo = ctk.CTkLabel(
             frame_info,
-            text=nome_arquivo,
+            text=self.nome_analise,
             font=("Arial", 18, "bold"),
             text_color=Cores.TEXTO_PRINCIPAL
         )
         titulo.pack(anchor="w")
+
+        arquivo = ctk.CTkLabel(
+            frame_info,
+            text=f"Imagem: {nome_arquivo}",
+            font=("Arial", 12),
+            text_color=Cores.TEXTO_SECUNDARIO
+        )
+        arquivo.pack(anchor="w", pady=(3, 0))
 
         badge_frame = ctk.CTkFrame(
             frame_info,
@@ -183,10 +193,10 @@ class CardHistorico(ctk.CTkFrame):
     def cor_resultado_fundo(self):
         resultado = self.resultado.lower()
 
-        if "possível" in resultado or "alto" in resultado:
+        if "possível" in resultado or "possivel" in resultado or "solo com potencial" in resultado:
             return "#2f2a1f"
 
-        if "baixo" in resultado:
+        if "sem potencial" in resultado or "baixo" in resultado:
             return "#3a2020"
 
         return "#1f2a3a"
@@ -194,10 +204,10 @@ class CardHistorico(ctk.CTkFrame):
     def cor_resultado_texto(self):
         resultado = self.resultado.lower()
 
-        if "possível" in resultado or "alto" in resultado:
+        if "possível" in resultado or "possivel" in resultado or "solo com potencial" in resultado:
             return "#e0bb5c"
 
-        if "baixo" in resultado:
+        if "sem potencial" in resultado or "baixo" in resultado:
             return "#ff8a8a"
 
         return "#8ec5ff"

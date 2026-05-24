@@ -1,5 +1,10 @@
+import os
 import customtkinter as ctk
+
 from interface.tema.cores import Cores
+from persistencia.database.conexao import ConexaoBanco
+from persistencia.repository.treinamento_repository import TreinamentoRepository
+from utils.caminhos import DATASET_POTENCIAL_DIR, DATASET_NAO_AURIFERO_DIR
 
 
 class ResumoSistema(ctk.CTkFrame):
@@ -24,15 +29,33 @@ class ResumoSistema(ctk.CTkFrame):
         ).pack(anchor="w", padx=22, pady=(18, 14))
 
     def criar_itens(self):
+        ultimo = TreinamentoRepository.ultimo_treinamento()
+        modelo_status = "Ativo" if ultimo else "Pendente"
+        ultimo_treinamento = str(ultimo[4]) if ultimo else "Nenhum treinamento registrado"
+
+        total_dataset = self.contar_dataset()
+
         itens = [
-            ("🛡", "Modelo de IA", "Rede Neural Convolucional (CNN)", "Ativo", Cores.VERDE),
-            ("📁", "Base de Dados", "SQLite Local", "Conectado", Cores.VERDE),
-            ("🖼", "Conjunto de Dados", "2 classes • 342 imagens", "Carregado", Cores.TEXTO_SECUNDARIO),
-            ("📅", "Último Treinamento", "10/05/2025 • 18:45", "Atualizado", Cores.AZUL),
+            ("🛡", "Modelo de IA", "Classificador inicial por características", modelo_status, Cores.VERDE if ultimo else Cores.VERMELHO),
+            ("📁", "Base de Dados", f"SQLite Local: {ConexaoBanco.CAMINHO_BANCO.name}", "Conectado", Cores.VERDE),
+            ("🖼", "Conjunto de Dados", f"2 classes • {total_dataset} imagens", "Carregado", Cores.TEXTO_SECUNDARIO),
+            ("📅", "Último Treinamento", ultimo_treinamento, "Atualizado" if ultimo else "Pendente", Cores.AZUL),
         ]
 
         for item in itens:
             self.item_resumo(*item)
+
+    def contar_dataset(self):
+        total = 0
+
+        for pasta in [DATASET_POTENCIAL_DIR, DATASET_NAO_AURIFERO_DIR]:
+            if pasta.exists():
+                total += len([
+                    arq for arq in os.listdir(pasta)
+                    if arq.lower().endswith((".jpg", ".jpeg", ".png"))
+                ])
+
+        return total
 
     def item_resumo(self, icone, titulo, subtitulo, status, cor):
         linha = ctk.CTkFrame(

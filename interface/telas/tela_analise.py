@@ -3,7 +3,7 @@ import customtkinter as ctk
 from interface.componentes.cabecalho import Cabecalho
 from interface.componentes.card_resumo import CardResumo
 from interface.componentes.seletor_imagem import SeletorImagem
-from repository.analise_repository import AnaliseRepository
+from persistencia.repository.analise_repository import AnaliseRepository
 
 
 class TelaAnalise(ctk.CTkFrame):

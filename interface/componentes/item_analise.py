@@ -1,9 +1,12 @@
 import customtkinter as ctk
+from PIL import Image
+from pathlib import Path
+
 from interface.tema.cores import Cores
 
 
 class ItemAnalise(ctk.CTkFrame):
-    def __init__(self, master, nome, data, porcentagem, resultado, cor):
+    def __init__(self, master, nome, data, porcentagem, resultado, cor, caminho_imagem=None):
         super().__init__(
             master,
             fg_color=Cores.FUNDO_SECUNDARIO,
@@ -11,6 +14,8 @@ class ItemAnalise(ctk.CTkFrame):
             border_width=1,
             border_color=Cores.BORDA
         )
+
+        self.imagem_thumb = None
 
         thumb = ctk.CTkFrame(
             self,
@@ -22,11 +27,27 @@ class ItemAnalise(ctk.CTkFrame):
         thumb.pack(side="left", padx=10, pady=8)
         thumb.pack_propagate(False)
 
-        ctk.CTkLabel(
-            thumb,
-            text="🪨",
-            font=("Segoe UI", 24)
-        ).place(relx=0.5, rely=0.5, anchor="center")
+        if caminho_imagem and Path(caminho_imagem).exists():
+            imagem = Image.open(caminho_imagem)
+            imagem = imagem.resize((64, 58))
+
+            self.imagem_thumb = ctk.CTkImage(
+                light_image=imagem,
+                dark_image=imagem,
+                size=(64, 58)
+            )
+
+            ctk.CTkLabel(
+                thumb,
+                image=self.imagem_thumb,
+                text=""
+            ).place(relx=0.5, rely=0.5, anchor="center")
+        else:
+            ctk.CTkLabel(
+                thumb,
+                text="🪨",
+                font=("Segoe UI", 24)
+            ).place(relx=0.5, rely=0.5, anchor="center")
 
         textos = ctk.CTkFrame(self, fg_color="transparent")
         textos.pack(side="left", fill="both", expand=True)
