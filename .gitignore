@@ -1,0 +1,27 @@
+# Ambiente virtual
+.venv/
+
+# Cache Python
+__pycache__/
+*.pyc
+
+# PyCharm
+.idea/
+
+# Banco de dados
+*.db
+*.sqlite3
+
+# Dataset de treinamento
+dataset/
+imagens_treinamento/
+dados/
+# Dataset
+persistencia/data/dataset/
+
+# Modelos treinados
+*.keras
+*.h5
+
+# Logs
+*.log

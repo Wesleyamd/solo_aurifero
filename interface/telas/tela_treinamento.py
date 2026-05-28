@@ -1,6 +1,7 @@
 import os
 import shutil
 import uuid
+import threading
 import customtkinter as ctk
 from tkinter import filedialog, messagebox
 
@@ -8,6 +9,7 @@ from interface.componentes.cabecalho import Cabecalho
 from interface.componentes.card_treinamento_resumo import CardTreinamentoResumo
 from interface.componentes.painel_treinamento import PainelTreinamento
 from persistencia.repository.treinamento_repository import TreinamentoRepository
+from ia.treinamento import treinar_efficientnet
 from utils.caminhos import (
     DATASET_POTENCIAL_DIR,
     DATASET_NAO_AURIFERO_DIR,
@@ -121,15 +123,35 @@ class TelaTreinamento(ctk.CTkFrame):
         self.painel.atualizar_status_modelo(treinado)
 
     def treinar_modelo(self):
+        total_p = self.contar_imagens(self.pasta_potencial)
+        total_n = self.contar_imagens(self.pasta_nao)
+
+        if total_p < 20 or total_n < 20:
+            messagebox.showwarning(
+                "Dataset insuficiente",
+                "Adicione pelo menos 20 imagens em cada classe antes de treinar."
+            )
+            return
+
         self.painel.iniciar_treinamento()
+        self.painel.progresso(0.20)
 
-        self.after(800, lambda: self.painel.progresso(0.65))
-        self.after(1500, lambda: self.painel.progresso(0.90))
-        self.after(2200, self.finalizar_treinamento)
+        thread = threading.Thread(target=self.executar_treinamento, daemon=True)
+        thread.start()
 
-    def finalizar_treinamento(self):
-        caminho_modelo = self.pasta_modelos / "modelo_solo.pkl"
-        caminho_modelo.write_text("Modelo simulado para registro de treinamento.", encoding="utf-8")
+    def executar_treinamento(self):
+        try:
+            metricas = treinar_efficientnet(
+                pasta_dataset=self.pasta_potencial.parent,
+                pasta_modelos=self.pasta_modelos,
+                epocas=10
+            )
+            self.after(0, lambda: self.finalizar_treinamento(metricas))
+        except Exception as erro:
+            self.after(0, lambda: self.erro_treinamento(str(erro)))
+
+    def finalizar_treinamento(self, metricas):
+        caminho_modelo = self.pasta_modelos / "modelo_solo.keras"
 
         total_p = self.contar_imagens(self.pasta_potencial)
         total_n = self.contar_imagens(self.pasta_nao)
@@ -143,7 +165,16 @@ class TelaTreinamento(ctk.CTkFrame):
         self.painel.finalizar_treinamento()
         self.atualizar_status()
 
-        messagebox.showinfo(
-            "Treinamento",
-            "Modelo treinado com sucesso e registrado no banco de dados."
+        mensagem = (
+            "Modelo treinado com sucesso!\n\n"
+            f"Acurácia: {metricas['accuracy'] * 100:.2f}%\n"
+            f"Precisão: {metricas['precision'] * 100:.2f}%\n"
+            f"Recall: {metricas['recall'] * 100:.2f}%\n"
+            f"F1-score: {metricas['f1_score'] * 100:.2f}%"
         )
+
+        messagebox.showinfo("Treinamento concluído", mensagem)
+
+    def erro_treinamento(self, erro):
+        self.painel.atualizar_status_modelo(False)
+        messagebox.showerror("Erro no treinamento", erro)

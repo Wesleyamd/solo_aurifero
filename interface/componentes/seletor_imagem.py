@@ -5,8 +5,8 @@ from PIL import Image
 from datetime import datetime
 
 from interface.tema.cores import Cores
-from aplicacao.service.analise_service import AnaliseService
 from aplicacao.service.arquivo_service import ArquivoService
+from ia.classificacao import classificar_imagem
 
 
 class SeletorImagem(ctk.CTkFrame):
@@ -203,9 +203,8 @@ class SeletorImagem(ctk.CTkFrame):
             self.caminho_original
         )
 
-        resultado = AnaliseService.analisar_cor(
-            self.caminho_copia
-        )
+        resultado, confianca, classe = classificar_imagem(self.caminho_copia)
+        resultado = f"{resultado} - Confiança: {confianca}%"
 
         data_analise = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
