@@ -4,7 +4,7 @@ from tkinter import messagebox
 from interface.componentes.cabecalho import Cabecalho
 from interface.componentes.card_historico import CardHistorico
 from interface.tema.cores import Cores
-from persistencia.repository.analise_repository import AnaliseRepository
+from controller.historico_controller import HistoricoController
 
 
 class TelaHistorico(ctk.CTkFrame):
@@ -59,7 +59,7 @@ class TelaHistorico(ctk.CTkFrame):
     def carregar_historico(self):
         self.limpar_lista()
 
-        registros = AnaliseRepository.listar_todas()
+        registros = HistoricoController.listar()
         total = len(registros)
 
         self.atualizar_total(total)
@@ -133,5 +133,5 @@ class TelaHistorico(ctk.CTkFrame):
         if not confirmar:
             return
 
-        AnaliseRepository.excluir(analise_id)
+        HistoricoController.excluir(analise_id)
         self.carregar_historico()

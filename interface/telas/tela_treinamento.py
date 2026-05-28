@@ -1,33 +1,18 @@
-import os
-import shutil
-import uuid
 import threading
 import customtkinter as ctk
 from tkinter import filedialog, messagebox
 
+from controller.treinamento_controller import TreinamentoController
 from interface.componentes.cabecalho import Cabecalho
 from interface.componentes.card_treinamento_resumo import CardTreinamentoResumo
 from interface.componentes.painel_treinamento import PainelTreinamento
-from persistencia.repository.treinamento_repository import TreinamentoRepository
-from ia.treinamento import treinar_efficientnet
-from utils.caminhos import (
-    DATASET_POTENCIAL_DIR,
-    DATASET_NAO_AURIFERO_DIR,
-    MODELOS_DIR,
-)
 
 
 class TelaTreinamento(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(master, fg_color="transparent")
 
-        self.pasta_potencial = DATASET_POTENCIAL_DIR
-        self.pasta_nao = DATASET_NAO_AURIFERO_DIR
-        self.pasta_modelos = MODELOS_DIR
-
-        self.pasta_potencial.mkdir(parents=True, exist_ok=True)
-        self.pasta_nao.mkdir(parents=True, exist_ok=True)
-        self.pasta_modelos.mkdir(parents=True, exist_ok=True)
+        TreinamentoController.preparar_pastas()
 
         self.criar_layout()
         self.atualizar_status()
@@ -76,20 +61,7 @@ class TelaTreinamento(ctk.CTkFrame):
         if not caminhos:
             return
 
-        pasta = self.pasta_potencial if classe == "potencial" else self.pasta_nao
-        copiadas = 0
-
-        for caminho in caminhos:
-            try:
-                ext = os.path.splitext(caminho)[1]
-                nome = f"{uuid.uuid4().hex}{ext}"
-                destino = pasta / nome
-
-                shutil.copy2(caminho, destino)
-                copiadas += 1
-            except Exception as erro:
-                print(f"Erro ao copiar imagem: {erro}")
-
+        copiadas = TreinamentoController.adicionar_imagens(classe, caminhos)
         self.atualizar_status()
 
         messagebox.showinfo(
@@ -97,36 +69,18 @@ class TelaTreinamento(ctk.CTkFrame):
             f"{copiadas} imagem(ns) adicionadas."
         )
 
-    def contar_imagens(self, pasta):
-        if not pasta.exists():
-            return 0
-
-        return len([
-            arq for arq in os.listdir(pasta)
-            if arq.lower().endswith((".jpg", ".jpeg", ".png"))
-        ])
-
     def atualizar_status(self):
-        total_p = self.contar_imagens(self.pasta_potencial)
-        total_n = self.contar_imagens(self.pasta_nao)
-        total = total_p + total_n
+        resumo = TreinamentoController.obter_resumo()
 
-        caminho_modelo = self.pasta_modelos / "modelo_solo.pkl"
+        self.card_potencial.atualizar_valor(resumo["total_potencial"])
+        self.card_nao.atualizar_valor(resumo["total_nao"])
+        self.card_total.atualizar_valor(resumo["total"])
+        self.card_modelo.atualizar_valor("Sim" if resumo["treinado"] else "Não")
 
-        treinado = caminho_modelo.exists() or TreinamentoRepository.modelo_treinado()
-
-        self.card_potencial.atualizar_valor(total_p)
-        self.card_nao.atualizar_valor(total_n)
-        self.card_total.atualizar_valor(total)
-        self.card_modelo.atualizar_valor("Sim" if treinado else "Não")
-
-        self.painel.atualizar_status_modelo(treinado)
+        self.painel.atualizar_status_modelo(resumo["treinado"])
 
     def treinar_modelo(self):
-        total_p = self.contar_imagens(self.pasta_potencial)
-        total_n = self.contar_imagens(self.pasta_nao)
-
-        if total_p < 20 or total_n < 20:
+        if not TreinamentoController.validar_dataset(minimo_por_classe=20):
             messagebox.showwarning(
                 "Dataset insuficiente",
                 "Adicione pelo menos 20 imagens em cada classe antes de treinar."
@@ -141,27 +95,12 @@ class TelaTreinamento(ctk.CTkFrame):
 
     def executar_treinamento(self):
         try:
-            metricas = treinar_efficientnet(
-                pasta_dataset=self.pasta_potencial.parent,
-                pasta_modelos=self.pasta_modelos,
-                epocas=10
-            )
+            metricas = TreinamentoController.treinar_modelo(epocas=10)
             self.after(0, lambda: self.finalizar_treinamento(metricas))
         except Exception as erro:
             self.after(0, lambda: self.erro_treinamento(str(erro)))
 
     def finalizar_treinamento(self, metricas):
-        caminho_modelo = self.pasta_modelos / "modelo_solo.keras"
-
-        total_p = self.contar_imagens(self.pasta_potencial)
-        total_n = self.contar_imagens(self.pasta_nao)
-
-        TreinamentoRepository.salvar(
-            total_potencial=total_p,
-            total_nao_aurifero=total_n,
-            modelo_gerado=caminho_modelo
-        )
-
         self.painel.finalizar_treinamento()
         self.atualizar_status()
 

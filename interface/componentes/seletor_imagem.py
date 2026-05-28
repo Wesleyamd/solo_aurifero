@@ -1,12 +1,8 @@
-from persistencia.repository.analise_repository import AnaliseRepository
 import customtkinter as ctk
 from tkinter import filedialog, messagebox
 from PIL import Image
-from datetime import datetime
-
 from interface.tema.cores import Cores
-from aplicacao.service.arquivo_service import ArquivoService
-from ia.classificacao import classificar_imagem
+from controller.analise_controller import AnaliseController
 
 
 class SeletorImagem(ctk.CTkFrame):
@@ -199,26 +195,26 @@ class SeletorImagem(ctk.CTkFrame):
 
         self.update()
 
-        self.caminho_copia = ArquivoService.salvar_copia_imagem(
-            self.caminho_original
-        )
+        try:
+            dados = AnaliseController.analisar(
+                nome_analise,
+                self.caminho_original
+            )
+        except Exception as erro:
+            self.label_resultado.configure(
+                text="Não foi possível concluir a análise.",
+                text_color="#f87171"
+            )
+            self.status.configure(
+                text="Erro na análise",
+                text_color="#f87171"
+            )
+            messagebox.showerror("Erro na análise", str(erro))
+            return
 
-        resultado, confianca, classe = classificar_imagem(self.caminho_copia)
-        resultado = f"{resultado} - Confiança: {confianca}%"
-
-        data_analise = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-        AnaliseRepository.salvar(
-            nome_analise,
-            self.caminho_copia,
-            resultado,
-            data_analise
-        )
-
-        if AnaliseRepository.eh_resultado_com_potencial(resultado):
-            cor = "#4ade80"
-        else:
-            cor = "#f87171"
+        self.caminho_copia = dados["caminho_copia"]
+        resultado = dados["resultado"]
+        cor = "#4ade80" if dados["tem_potencial"] else "#f87171"
 
         self.label_resultado.configure(
             text=resultado,

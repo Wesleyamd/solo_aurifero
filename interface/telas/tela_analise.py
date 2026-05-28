@@ -3,7 +3,7 @@ import customtkinter as ctk
 from interface.componentes.cabecalho import Cabecalho
 from interface.componentes.card_resumo import CardResumo
 from interface.componentes.seletor_imagem import SeletorImagem
-from persistencia.repository.analise_repository import AnaliseRepository
+from controller.analise_controller import AnaliseController
 
 
 class TelaAnalise(ctk.CTkFrame):
@@ -46,7 +46,7 @@ class TelaAnalise(ctk.CTkFrame):
         self.card2 = CardResumo(
             self.frame_cards,
             "Modelo utilizado",
-            "Simples"
+            "EfficientNetB0"
         )
         self.card2.pack(side="left", expand=True, fill="x", padx=6)
 
@@ -95,12 +95,12 @@ class TelaAnalise(ctk.CTkFrame):
         self.seletor.pack(fill="both", expand=True, padx=20, pady=(8, 20))
 
     def atualizar_cards(self):
-        total = AnaliseRepository.contar()
-        ultimo = AnaliseRepository.ultimo_resultado()
+        total = AnaliseController.total_analises()
+        ultimo = AnaliseController.ultimo_resultado()
 
         if not ultimo:
             ultimo = "-"
 
         self.card1.atualizar_valor(str(total))
-        self.card2.atualizar_valor("Simples")
+        self.card2.atualizar_valor("EfficientNetB0")
         self.card3.atualizar_valor(ultimo)
