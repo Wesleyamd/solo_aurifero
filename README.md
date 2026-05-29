@@ -6,9 +6,26 @@ Sistema de análise de imagens de solo com potencial aurífero
 
 ##  Descrição
 
-O **Solo Aurífero** é um sistema desktop desenvolvido em Python com o objetivo de analisar imagens de solo e indicar, de forma inicial, o potencial aurífero com base em características visuais.
+## Descrição
 
-O projeto faz parte do Trabalho de Conclusão de Curso (TCC) em Engenharia da Computação e tem como foco o uso de **visão computacional** e futuramente **aprendizado de máquina**.
+O Solo Aurífero é um sistema desktop desenvolvido em Python com o objetivo de analisar 
+imagens de solo e identificar, de forma automatizada, o potencial aurífero com base em 
+características visuais extraídas por técnicas de Inteligência Artificial.
+
+O projeto foi desenvolvido como parte da disciplina **Projeto de Sistemas Inteligentes** 
+do curso de Engenharia da Computação, aplicando conceitos de Visão Computacional, 
+Aprendizado de Máquina e Deep Learning para a classificação de imagens de solo.
+
+A solução utiliza modelos de redes neurais convolucionais pré-treinados,
+como EfficientNetB0 e MobileNetV2, permitindo a realização de experimentos 
+comparativos e a avaliação de métricas de desempenho. Além disso, o sistema 
+disponibiliza uma interface gráfica desktop para análise de imagens, treinamento
+de modelos e visualização do histórico de classificações.
+
+O projeto busca demonstrar a aplicação prática de técnicas de Inteligência 
+Artificial na análise de características visuais de solos, contribuindo para
+estudos relacionados à prospecção mineral e à classificação automatizada de imagens.
+
 
 ---
 
