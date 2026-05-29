@@ -38,12 +38,39 @@ O sistema segue uma arquitetura modular:
 
 ```
 solo_aurifero/
-├── interface/       # Interface gráfica (UI)
-├── service/         # Regras de negócio
-├── repository/      # Acesso a dados
-├── database/        # Configuração do banco
-├── data/            # Arquivos gerados (imagens e banco)
-├── controller/      # Controle de fluxo (em evolução)
+├── controller/           # Controladores responsáveis pelo fluxo da aplicação
+│   ├── analise_controller.py
+│   ├── historico_controller.py
+│   └── treinamento_controller.py
+│
+├── ia/                   # Módulos de Inteligência Artificial
+│   ├── preprocessamento.py
+│   ├── extracao_caracteristicas.py
+│   ├── treinamento.py
+│   └── classificacao.py
+│
+├── interface/            # Interface gráfica do sistema
+│   ├── telas/
+│   ├── componentes/
+│   ├── tema/
+│   ├── app.py
+│   └── janela_principal.py
+│
+├── negocio/              # Regras de negócio da aplicação
+│   ├── analise_service.py
+│   ├── treinamento_service.py
+│   ├── historico_service.py
+│   └── arquivo_service.py
+│
+├── persistencia/         # Camada de persistência de dados
+│   ├── database/
+│   ├── model/
+│   ├── repository/
+│   └── data/
+│
+├── docs/                 # Documentação do projeto
+│
+└── main.py               # Ponto de entrada da aplicação
 ```
 
 ---
