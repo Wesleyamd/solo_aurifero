@@ -1,4 +1,5 @@
 import customtkinter as ctk
+import re
 
 from interface.tema.cores import Cores
 from interface.componentes.item_analise import ItemAnalise
@@ -53,7 +54,15 @@ class ListaAnalises(ctk.CTkFrame):
             data = str(data_analise)
 
             possui_potencial = AnaliseRepository.eh_resultado_com_potencial(resultado)
-            porcentagem = "100%" if possui_potencial else "0%"
+
+            match = re.search(r"Confiança:\s*([\d.]+)", resultado)
+
+            if match:
+                confianca = float(match.group(1))
+                porcentagem = f"{confianca:.0f}%"
+            else:
+                porcentagem = "--"
+
             cor = Cores.VERDE if possui_potencial else Cores.VERMELHO
 
             linha = ItemAnalise(

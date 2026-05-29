@@ -17,7 +17,7 @@ class Rodape(ctk.CTkFrame):
 
         ctk.CTkLabel(
             self,
-            text="❝  Transformando dados do solo em descobertas de valor.  ✨",
+            text=" ",
             font=("Segoe UI", 16, "italic"),
             text_color=Cores.TEXTO
         ).place(relx=0.5, rely=0.5, anchor="center")
