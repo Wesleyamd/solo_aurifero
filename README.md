@@ -22,13 +22,19 @@ O projeto faz parte do Trabalho de Conclusão de Curso (TCC) em Engenharia da Co
 
 ---
 
-## 🛠 Tecnologias utilizadas
+## Tecnologias Utilizadas
 
-* Python
-* CustomTkinter (interface gráfica)
-* OpenCV (processamento de imagem - em evolução)
-* SQLite (armazenamento local)
-* Pillow (manipulação de imagens)
+* **Python** – linguagem principal de desenvolvimento.
+* **CustomTkinter** – construção da interface gráfica moderna e responsiva.
+* **TensorFlow / Keras** – treinamento e inferência dos modelos de Deep Learning.
+* **EfficientNetB0** – modelo principal utilizado para classificação de imagens de solo.
+* **MobileNetV2** – modelo utilizado para comparação experimental de desempenho.
+* **OpenCV** – processamento e análise de imagens.
+* **SQLite** – armazenamento local de dados e histórico de análises.
+* **Pillow (PIL)** – manipulação e exibição de imagens.
+* **NumPy** – operações numéricas e manipulação de matrizes.
+* **Git e GitHub** – versionamento e gerenciamento do código-fonte.
+
 
 ---
 
