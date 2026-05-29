@@ -175,16 +175,19 @@ data/banco/solo.db
 
 ---
 
-##  Funcionalidades futuras
+## Funcionalidades Futuras
 
-* Análise real com OpenCV
-* Extração de características (cor, textura)
-* Treinamento de modelo de Machine Learning
-* Classificação automática com IA
-* API para integração com aplicativos móveis
-* Dashboard com métricas
+* Comparação entre diferentes arquiteturas de Deep Learning (EfficientNetB0, MobileNetV2 e outras).
+* Ampliação da base de dados com imagens coletadas em diferentes regiões.
+* Implementação de mapas de calor para interpretação visual das classificações.
+* Geração automática de relatórios das análises realizadas.
+* Exportação de resultados para PDF e planilhas.
+* Integração com Firebase para armazenamento em nuvem.
+* Desenvolvimento de aplicativo móvel para consulta das análises.
+* Dashboard avançado com métricas de treinamento e desempenho dos modelos.
+* Inclusão de novas classes de solo para aumentar a capacidade de generalização do sistema.
+* Integração com dados geológicos e geoespaciais provenientes de bases públicas.
 
----
 
 ##  Autor
 
