@@ -32,9 +32,11 @@ O projeto faz parte do Trabalho de Conclusão de Curso (TCC) em Engenharia da Co
 
 ---
 
-##  Arquitetura do projeto
+##  Estrutura do projeto
 
-O sistema segue uma arquitetura modular:
+O sistema segue uma estrutura modular organizada em camadas,
+separando responsabilidades entre interface, regras de negócio,
+inteligência artificial e persistência de dados.
 
 ```
 solo_aurifero/
