@@ -63,6 +63,7 @@ class BarraLateral(ctk.CTkFrame):
         self.criar_botao("analise", "🖼  Analisar Solo")
         self.criar_botao("historico", "📋  Histórico")
         self.criar_botao("treinamento", "🧠  Treinar Modelo")
+        self.criar_botao("resultados", "📊  Resultados")
 
     def criar_botao(self, chave, texto):
         botao = ctk.CTkButton(

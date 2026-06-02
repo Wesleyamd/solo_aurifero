@@ -93,7 +93,7 @@ class BannerInicial(ctk.CTkFrame):
         self.canvas.create_image(0, 0, image=self.img_banner, anchor="nw")
 
     def criar_textos(self):
-        titulo = "Sistema de Análise\nde Solo Aurífero"
+        titulo = "Sistema de Análise\nde Solo Com Potencial Aurífero"
 
         # sombra suave
         self.canvas.create_text(

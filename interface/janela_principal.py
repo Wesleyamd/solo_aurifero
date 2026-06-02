@@ -5,6 +5,7 @@ from interface.telas.tela_inicial import TelaInicial
 from interface.telas.tela_analise import TelaAnalise
 from interface.telas.tela_historico import TelaHistorico
 from interface.telas.tela_treinamento import TelaTreinamento
+from interface.telas.tela_resultados import TelaResultados
 from interface.tema.cores import Cores
 
 
@@ -62,6 +63,9 @@ class JanelaPrincipal:
 
         elif nome_tela == "treinamento":
             self.tela_atual = TelaTreinamento(self.area_conteudo)
+
+        elif nome_tela == "resultados":
+            self.tela_atual = TelaResultados(self.area_conteudo)
 
         else:
             return
