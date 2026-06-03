@@ -53,7 +53,34 @@ class PainelTreinamento(ctk.CTkFrame):
             font=("Arial", 13),
             text_color=Cores.TEXTO_SECUNDARIO
         )
-        self.label_info.pack(anchor="w", padx=20, pady=(5, 15))
+        self.label_info.pack(anchor="w", padx=20, pady=(5, 12))
+
+        self.frame_modelo = ctk.CTkFrame(
+            self.card_status,
+            fg_color="transparent"
+        )
+        self.frame_modelo.pack(fill="x", padx=20, pady=(0, 15))
+
+        self.label_modelo = ctk.CTkLabel(
+            self.frame_modelo,
+            text="Modelo de IA:",
+            font=("Arial", 13, "bold"),
+            text_color=Cores.TEXTO_PRINCIPAL
+        )
+        self.label_modelo.pack(side="left", padx=(0, 10))
+
+        self.modelo_var = ctk.StringVar(value="EfficientNetB0")
+        self.combo_modelo = ctk.CTkComboBox(
+            self.frame_modelo,
+            values=["EfficientNetB0", "MobileNetV2"],
+            variable=self.modelo_var,
+            width=180,
+            height=34,
+            corner_radius=10,
+            state="readonly",
+            command=lambda _valor: self.ao_atualizar()
+        )
+        self.combo_modelo.pack(side="left")
 
         self.barra = ctk.CTkProgressBar(
             self.card_status,
@@ -153,6 +180,9 @@ class PainelTreinamento(ctk.CTkFrame):
             command=self.ao_treinar
         )
         self.btn_treinar.pack(side="left", pady=8)
+
+    def obter_modelo_selecionado(self):
+        return self.modelo_var.get()
 
     def atualizar_status_modelo(self, treinado):
         if treinado:

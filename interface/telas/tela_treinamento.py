@@ -69,13 +69,19 @@ class TelaTreinamento(ctk.CTkFrame):
             f"{copiadas} imagem(ns) adicionadas."
         )
 
+    def obter_modelo_selecionado(self):
+        if hasattr(self, "painel"):
+            return self.painel.obter_modelo_selecionado()
+        return "EfficientNetB0"
+
     def atualizar_status(self):
-        resumo = TreinamentoController.obter_resumo()
+        modelo = self.obter_modelo_selecionado()
+        resumo = TreinamentoController.obter_resumo(modelo)
 
         self.card_potencial.atualizar_valor(resumo["total_potencial"])
         self.card_nao.atualizar_valor(resumo["total_nao"])
         self.card_total.atualizar_valor(resumo["total"])
-        self.card_modelo.atualizar_valor("Sim" if resumo["treinado"] else "Não")
+        self.card_modelo.atualizar_valor(f"{modelo}: {'Sim' if resumo['treinado'] else 'Não'}")
 
         self.painel.atualizar_status_modelo(resumo["treinado"])
 
@@ -95,7 +101,8 @@ class TelaTreinamento(ctk.CTkFrame):
 
     def executar_treinamento(self):
         try:
-            metricas = TreinamentoController.treinar_modelo(epocas=10)
+            modelo = self.obter_modelo_selecionado()
+            metricas = TreinamentoController.treinar_modelo(modelo=modelo, epocas=10)
             self.after(0, lambda: self.finalizar_treinamento(metricas))
         except Exception as erro:
             self.after(0, lambda: self.erro_treinamento(str(erro)))
@@ -105,7 +112,7 @@ class TelaTreinamento(ctk.CTkFrame):
         self.atualizar_status()
 
         mensagem = (
-            "Modelo treinado com sucesso!\n\n"
+            f"Modelo {metricas.get('modelo', self.obter_modelo_selecionado())} treinado com sucesso!\n\n"
             f"Acurácia: {metricas['accuracy'] * 100:.2f}%\n"
             f"Precisão: {metricas['precision'] * 100:.2f}%\n"
             f"Recall: {metricas['recall'] * 100:.2f}%\n"

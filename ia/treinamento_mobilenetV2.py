@@ -3,8 +3,8 @@ import json
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras import layers
-from tensorflow.keras.applications import EfficientNetB0
-from tensorflow.keras.applications.efficientnet import preprocess_input
+from tensorflow.keras.applications import MobileNetV2
+from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, classification_report
 
 
@@ -13,9 +13,9 @@ BATCH_SIZE = 16
 SEED = 42
 
 
-def treinar_efficientnet(pasta_dataset, pasta_modelos, epocas=10):
+def treinar_mobilenet(pasta_dataset, pasta_modelos, epocas=10):
     """
-    Treina um modelo EfficientNetB0 usando a estrutura:
+    Treina um modelo MobileNetV2 usando a estrutura:
 
     dataset/
     ├── potencial_aurifero/
@@ -69,7 +69,7 @@ def treinar_efficientnet(pasta_dataset, pasta_modelos, epocas=10):
         layers.RandomContrast(0.10),
     ])
 
-    base = EfficientNetB0(
+    base = MobileNetV2(
         include_top=False,
         weights="imagenet",
         input_shape=(224, 224, 3),
@@ -121,30 +121,43 @@ def treinar_efficientnet(pasta_dataset, pasta_modelos, epocas=10):
     matriz = confusion_matrix(y_real, y_pred).tolist()
 
     metricas = {
+        "modelo": "MobileNetV2",
         "classes": nomes_classes,
         "accuracy": round(float(accuracy_score(y_real, y_pred)), 4),
         "precision": round(float(precision_score(y_real, y_pred, zero_division=0)), 4),
         "recall": round(float(recall_score(y_real, y_pred, zero_division=0)), 4),
         "f1_score": round(float(f1_score(y_real, y_pred, zero_division=0)), 4),
         "matriz_confusao": matriz,
-        "relatorio": classification_report(y_real, y_pred, target_names=nomes_classes, zero_division=0),
+        "relatorio": classification_report(
+            y_real,
+            y_pred,
+            target_names=nomes_classes,
+            zero_division=0,
+        ),
         "historico": {
             "accuracy": [float(v) for v in historico.history.get("accuracy", [])],
             "val_accuracy": [float(v) for v in historico.history.get("val_accuracy", [])],
             "loss": [float(v) for v in historico.history.get("loss", [])],
             "val_loss": [float(v) for v in historico.history.get("val_loss", [])],
-        }
+        },
     }
 
-    caminho_modelo = pasta_modelos / "modelo_solo.keras"
-    caminho_metricas = pasta_modelos / "metricas.json"
-    caminho_classes = pasta_modelos / "classes.json"
+    caminho_modelo = pasta_modelos / "modelo_mobilenetv2.keras"
+    caminho_metricas = pasta_modelos / "metricas_mobilenetv2.json"
+    caminho_classes = pasta_modelos / "classes_mobilenetv2.json"
 
     modelo.save(caminho_modelo)
-    caminho_metricas.write_text(json.dumps(metricas, indent=4, ensure_ascii=False), encoding="utf-8")
-    caminho_classes.write_text(json.dumps(nomes_classes, indent=4, ensure_ascii=False), encoding="utf-8")
+    caminho_metricas.write_text(
+        json.dumps(metricas, indent=4, ensure_ascii=False),
+        encoding="utf-8",
+    )
+    caminho_classes.write_text(
+        json.dumps(nomes_classes, indent=4, ensure_ascii=False),
+        encoding="utf-8",
+    )
 
     metricas["caminho_modelo"] = str(caminho_modelo)
     metricas["caminho_metricas"] = str(caminho_metricas)
+    metricas["caminho_classes"] = str(caminho_classes)
 
     return metricas

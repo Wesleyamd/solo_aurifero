@@ -24,12 +24,14 @@ class TelaResultados(ctk.CTkFrame):
                 os.path.join("persistencia", "data", "modelos", "efficientnetb0", "metricas.json"),
                 os.path.join("persistencia", "data", "modelos", "EfficientNetB0", "metricas.json"),
                 os.path.join("persistencia", "data", "modelos", "metricas_efficientnetb0.json"),
+                os.path.join("persistencia", "data", "modelos", "metricas_efficientnet.json"),
                 os.path.join("persistencia", "data", "modelos", "metricas.json"),
             ],
             "MobileNetV2": [
                 os.path.join("persistencia", "data", "modelos", "mobilenetv2", "metricas.json"),
                 os.path.join("persistencia", "data", "modelos", "MobileNetV2", "metricas.json"),
                 os.path.join("persistencia", "data", "modelos", "metricas_mobilenetv2.json"),
+                os.path.join("persistencia", "data", "modelos", "metricas_mobilenet.json"),
             ],
         }
 
@@ -195,7 +197,7 @@ class TelaResultados(ctk.CTkFrame):
 
         ctk.CTkLabel(
             card,
-            text="Após treinar esse modelo, salve as métricas em persistencia/data/modelos/mobilenetv2/metricas.json ou em metricas_mobilenetv2.json.",
+            text="Após treinar esse modelo, as métricas serão salvas automaticamente em persistencia/data/modelos/metricas_efficientnetb0.json ou metricas_mobilenetv2.json.",
             font=("Arial", 14),
             text_color=Cores.TEXTO_SECUNDARIO,
             wraplength=850,
