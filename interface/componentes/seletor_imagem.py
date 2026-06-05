@@ -6,8 +6,10 @@ from controller.analise_controller import AnaliseController
 
 
 class SeletorImagem(ctk.CTkFrame):
-    def __init__(self, master):
+    def __init__(self, master, combo_modelo):
         super().__init__(master, fg_color="transparent")
+
+        self.combo_modelo = combo_modelo
 
         self.caminho_original = None
         self.caminho_copia = None
@@ -196,9 +198,12 @@ class SeletorImagem(ctk.CTkFrame):
         self.update()
 
         try:
+            modelo = self.combo_modelo.get()
+
             dados = AnaliseController.analisar(
                 nome_analise,
-                self.caminho_original
+                self.caminho_original,
+                modelo
             )
         except Exception as erro:
             self.label_resultado.configure(

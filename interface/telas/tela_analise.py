@@ -10,6 +10,8 @@ class TelaAnalise(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(master, fg_color="transparent")
 
+        self.combo_modelo = None
+
         self.criar_layout()
         self.atualizar_cards()
 
@@ -90,9 +92,27 @@ class TelaAnalise(ctk.CTkFrame):
         )
         self.status.pack(side="right")
 
+        self.combo_modelo = ctk.CTkComboBox(
+            self.frame_topo,
+            values=["EfficientNetB0", "MobileNetV2"],
+            width=170,
+            command=lambda _: self.atualizar_modelo_card()
+        )
+        self.combo_modelo.set("EfficientNetB0")
+        self.combo_modelo.pack(side="right", padx=(0, 10))
+
         # Seletor de imagem
-        self.seletor = SeletorImagem(self.frame_analise)
+        # O seletor recebe o ComboBox para conseguir enviar o modelo selecionado
+        # para o AnaliseController no momento da classificação.
+        self.seletor = SeletorImagem(
+            self.frame_analise,
+            self.combo_modelo
+        )
         self.seletor.pack(fill="both", expand=True, padx=20, pady=(8, 20))
+
+    def atualizar_modelo_card(self):
+        if self.combo_modelo:
+            self.card2.atualizar_valor(self.combo_modelo.get())
 
     def atualizar_cards(self):
         total = AnaliseController.total_analises()
@@ -102,5 +122,5 @@ class TelaAnalise(ctk.CTkFrame):
             ultimo = "-"
 
         self.card1.atualizar_valor(str(total))
-        self.card2.atualizar_valor("EfficientNetB0")
+        self.atualizar_modelo_card()
         self.card3.atualizar_valor(ultimo)

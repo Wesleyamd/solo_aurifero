@@ -1,1 +1,0 @@
-Modelo simulado para registro de treinamento.

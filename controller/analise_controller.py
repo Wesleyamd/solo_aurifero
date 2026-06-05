@@ -9,18 +9,33 @@ class AnaliseController:
     """Controla o fluxo de análise entre interface, IA e persistência."""
 
     @staticmethod
-    def analisar(nome_analise, caminho_original):
+    def analisar(nome_analise, caminho_original, modelo="EfficientNetB0"):
         if not caminho_original:
             raise ValueError("Nenhuma imagem selecionada.")
 
         nome_analise = (nome_analise or "").strip()
-        if not nome_analise:
-            raise ValueError("Informe um nome para identificar esta análise.")
 
-        caminho_copia = ArquivoService.salvar_copia_imagem(caminho_original)
-        resultado, confianca, classe = classificar_imagem(caminho_copia)
-        resultado_formatado = f"{resultado} - Confiança: {confianca}%"
-        data_analise = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        if not nome_analise:
+            raise ValueError(
+                "Informe um nome para identificar esta análise."
+            )
+
+        caminho_copia = ArquivoService.salvar_copia_imagem(
+            caminho_original
+        )
+
+        resultado, confianca, classe = classificar_imagem(
+            caminho_copia,
+            modelo
+        )
+
+        resultado_formatado = (
+            f"{resultado} - Confiança: {confianca}%"
+        )
+
+        data_analise = datetime.now().strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
 
         AnaliseRepository.salvar(
             nome_analise,
@@ -35,7 +50,10 @@ class AnaliseController:
             "confianca": confianca,
             "classe": classe,
             "caminho_copia": caminho_copia,
-            "tem_potencial": AnaliseRepository.eh_resultado_com_potencial(resultado_formatado),
+            "tem_potencial":
+                AnaliseRepository.eh_resultado_com_potencial(
+                    resultado_formatado
+                ),
         }
 
     @staticmethod
