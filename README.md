@@ -17,13 +17,15 @@ O projeto busca demonstrar a aplicação prática de técnicas de Inteligência 
 
 ---
 
-##  Objetivos
+## Objetivos
 
-* Analisar imagens de solo
-* Identificar padrões visuais relevantes
-* Classificar o solo quanto ao potencial aurífero
-* Armazenar histórico de análises
-* Evoluir para um modelo de IA treinado
+* Classificar imagens de solo em duas categorias:
+  * Potencial Aurífero
+  * Não Aurífero
+* Aplicar técnicas de Visão Computacional e Deep Learning.
+* Avaliar o desempenho de diferentes arquiteturas de redes neurais convolucionais.
+* Armazenar e gerenciar o histórico de análises realizadas.
+* Disponibilizar uma interface gráfica intuitiva para treinamento e inferência dos modelos.
 
 ---
 
@@ -34,14 +36,57 @@ O projeto busca demonstrar a aplicação prática de técnicas de Inteligência 
 * **TensorFlow / Keras** – treinamento e inferência dos modelos de Deep Learning.
 * **EfficientNetB0** – modelo principal utilizado para classificação de imagens de solo.
 * **MobileNetV2** – modelo utilizado para comparação experimental de desempenho.
-* **OpenCV** – processamento e análise de imagens.
 * **SQLite** – armazenamento local de dados e histórico de análises.
 * **Pillow (PIL)** – manipulação e exibição de imagens.
 * **NumPy** – operações numéricas e manipulação de matrizes.
 * **Git e GitHub** – versionamento e gerenciamento do código-fonte.
 
-
 ---
+
+## Dataset
+
+O conjunto de dados foi composto por imagens coletadas pelo autor utilizando um smartphone Samsung Galaxy S23 Ultra.
+
+As imagens foram organizadas em duas classes:
+
+| Classe | Quantidade |
+|---------|------------|
+| Potencial Aurífero | 372 |
+| Não Aurífero | 244 |
+| Total | 616 |
+
+As imagens foram obtidas mantendo uma distância aproximada de 30 cm da superfície do solo, buscando padronizar as condições de aquisição.
+
+## Modelos de Inteligência Artificial
+
+O sistema utiliza Transfer Learning com modelos pré-treinados da ImageNet.
+
+### EfficientNetB0
+
+* Entrada: 224x224x3
+* Transfer Learning
+* Global Average Pooling
+* Camadas Dense com Dropout
+
+Resultados:
+
+* Acurácia: 93,26%
+* Precisão: 88,89%
+* Recall: 100%
+* F1-Score: 94,12%
+
+### MobileNetV2
+
+* Entrada: 224x224x3
+* Transfer Learning
+* Global Average Pooling
+
+Resultados:
+
+* Acurácia: 100%
+* Precisão: 100%
+* Recall: 100%
+* F1-Score: 100%
 
 ##  Estrutura do projeto
 
@@ -57,10 +102,12 @@ solo_aurifero/
 │   └── treinamento_controller.py
 │
 ├── ia/                   # Módulos de Inteligência Artificial
-│   ├── preprocessamento.py
-│   ├── extracao_caracteristicas.py
-│   ├── treinamento.py
-│   └── classificacao.py
+│   ├── classificacao.py
+│   ├── pre_processamento.py
+│   ├── teste_preprocessamento.py
+│   └── treinamento_efficientnetB0.py
+    └── treinamento_mobilenetV2.py
+
 │
 ├── interface/            # Interface gráfica do sistema
 │   ├── telas/
@@ -95,30 +142,47 @@ solo_aurifero/
 ### Diagrama de Classes (DCL)
 ![DCL](docs/DCL.png)
 
-##  Funcionalidades atuais
+## Funcionalidades Atuais
 
-* Seleção de imagem
-* Preview da imagem (com redimensionamento proporcional)
-* Análise inicial (simples)
-* Armazenamento das análises no banco
-* Histórico com:
+### Análise
 
-  * preview da imagem
-  * resultado
-  * data da análise
-* Exclusão de análises
-* Remoção automática da imagem salva
+* Seleção de imagens
+* Preview da imagem
+* Classificação utilizando IA
+* Exibição do percentual de confiança
+* Registro automático no histórico
 
----
+### Histórico
 
-## 🖥 Interface
+* Consulta das análises realizadas
+* Visualização da imagem analisada
+* Exclusão de registros
 
-O sistema possui:
+### Treinamento
 
-* Menu lateral moderno
+* Treinamento do EfficientNetB0
+* Treinamento do MobileNetV2
+* Salvamento automático dos modelos
+* Geração de métricas
+* Matriz de confusão
+* Curvas de treinamento
+
+### Resultados
+
+* Comparação entre modelos
+* Visualização das métricas
+* Dashboard com indicadores gerais do sistema
+
+## Interface
+
+O sistema possui uma interface gráfica desenvolvida com CustomTkinter contendo:
+
+* Dashboard inicial
 * Tela de análise
 * Tela de histórico
-* Tela de treinamento (em desenvolvimento)
+* Tela de treinamento
+* Tela de resultados
+* Tela de comparação entre modelos
 
 ---
 

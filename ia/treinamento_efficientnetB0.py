@@ -81,7 +81,7 @@ def treinar_efficientnet(pasta_dataset, pasta_modelos, epocas=10):
     x = preprocess_input(x)
     x = base(x, training=False)
     x = layers.GlobalAveragePooling2D()(x)
-    x = layers.Dropout(0.20)(x)
+    x = layers.Dropout(0.21)(x)
     saida = layers.Dense(1, activation="sigmoid")(x)
 
     modelo = tf.keras.Model(entrada, saida)

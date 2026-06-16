@@ -6,6 +6,7 @@ from interface.componentes.card_status import CardStatus
 from persistencia.repository.analise_repository import AnaliseRepository
 from persistencia.repository.treinamento_repository import TreinamentoRepository
 from utils.caminhos import DATASET_POTENCIAL_DIR, DATASET_NAO_AURIFERO_DIR
+from controller.dataset_controller import DatasetController
 
 
 class GridStatus(ctk.CTkFrame):
@@ -17,14 +18,16 @@ class GridStatus(ctk.CTkFrame):
 
         total_analises = AnaliseRepository.contar()
         percentual_potencial = AnaliseRepository.percentual_potencial()
-        total_dataset = self.contar_dataset()
+        resumo_dataset = DatasetController.obter_resumo_dataset()
+        total_potencial = resumo_dataset["potencial_aurifero"]
+        total_nao_aurifero = resumo_dataset["nao_aurifero"]
         modelo_status = "Treinado" if TreinamentoRepository.modelo_treinado() else "Não treinado"
 
         cards = [
             ("🖼", str(total_analises), "Análises", "Total", Cores.DOURADO),
             ("📈", percentual_potencial, "Potencial", "Resultados", Cores.VERDE),
-            ("🗄", str(total_dataset), "Banco", "Imagens", Cores.AZUL),
-            ("🧠", modelo_status, "Modelo", "Status", Cores.ROXO),
+            ("🟡", str(total_potencial), "Aurífero", "Imagens", Cores.DOURADO),
+            ("⚫", str(total_nao_aurifero), "Não Aurífero", "Imagens", Cores.AZUL),
         ]
 
         for i, dados in enumerate(cards):

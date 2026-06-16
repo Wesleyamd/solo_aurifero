@@ -85,7 +85,7 @@ def desenhar_matriz_confusao(master, metricas):
 
     figura = Figure(figsize=(5.6, 3.5), dpi=100)
     eixo = figura.add_subplot(111)
-    imagem = eixo.imshow(matriz)
+    imagem = eixo.imshow(matriz, cmap="Greens")
 
     eixo.set_xticks(range(len(classes)))
     eixo.set_yticks(range(len(classes)))
@@ -131,7 +131,7 @@ def criar_grafico_comparacao(master, metricas_modelos):
     card = criar_card_grafico(master, "Gráfico Comparativo")
     card.pack(fill="both", expand=True, padx=4, pady=(0, 10))
 
-    figura = Figure(figsize=(8.5, 3.6), dpi=100)
+    figura = Figure(figsize=(4.5, 3.6), dpi=100)
     eixo = figura.add_subplot(111)
 
     posicoes = list(range(len(modelos)))

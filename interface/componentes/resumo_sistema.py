@@ -36,7 +36,6 @@ class ResumoSistema(ctk.CTkFrame):
         total_dataset = self.contar_dataset()
 
         itens = [
-            ("🛡", "Modelo de IA", "Classificador inicial por características", modelo_status, Cores.VERDE if ultimo else Cores.VERMELHO),
             ("📁", "Base de Dados", f"SQLite Local: {ConexaoBanco.CAMINHO_BANCO.name}", "Conectado", Cores.VERDE),
             ("🖼", "Conjunto de Dados", f"2 classes • {total_dataset} imagens", "Carregado", Cores.TEXTO_SECUNDARIO),
             ("📅", "Último Treinamento", ultimo_treinamento, "Atualizado" if ultimo else "Pendente", Cores.AZUL),
